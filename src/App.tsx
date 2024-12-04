@@ -16,25 +16,27 @@ export const goodsFromServer: string[] = [
 ];
 
 enum SortType {
-  Default,
-  Alphabetically,
-  Length,
+  Default = 'default',
+  Alphabetically = 'alphabetically',
+  Length = 'length',
 }
 
 export const App: React.FC = () => {
   const [sortMode, setSortMode] = useState<SortType>(SortType.Default);
   const [isReverse, setIsReverse] = useState<boolean>(false);
   const sorteredGoods: string[] = [...goodsFromServer].sort((a, b) => {
-    const reverseMultiplicator = isReverse ? 1 : -1;
-
     if (sortMode === SortType.Alphabetically) {
-      return reverseMultiplicator * a.localeCompare(b);
+      return a.localeCompare(b);
     } else if (sortMode === SortType.Length) {
-      return reverseMultiplicator * (a.length - b.length);
+      return a.length - b.length;
     }
 
     return 0;
   });
+
+  const finalGoods: string[] = isReverse
+    ? [...sorteredGoods].reverse()
+    : sorteredGoods;
 
   return (
     <div className="section content">
@@ -83,15 +85,13 @@ export const App: React.FC = () => {
       </div>
 
       <ul>
-        <ul>
-          {sorteredGoods.map((good: string, index: number) => {
-            return (
-              <li key={index} data-cy="Good">
-                {good}
-              </li>
-            );
-          })}
-        </ul>
+        {finalGoods.map((good: string) => {
+          return (
+            <li key={good} data-cy="Good">
+              {good}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
